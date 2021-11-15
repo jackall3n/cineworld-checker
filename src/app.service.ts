@@ -13,9 +13,7 @@ export class AppService {
   constructor(
     private httpService: HttpService,
     @InjectTwilio() private readonly client: TwilioClient,
-  ) {
-    // this.check();
-  }
+  ) {}
 
   async getShowings(days: number) {
     const today = subHours(endOfToday(), 12);
@@ -28,8 +26,8 @@ export class AppService {
       dates.map(async (date) => {
         Logger.log(`Getting times for ${date}`);
 
-        const url = this.createUrl('ho00007226', date);
-        // const url = this.createUrl('ho00008069', date);
+        // const url = this.createUrl('ho00007226', date);
+        const url = this.createUrl('ho00008069', date);
         const { data } = await this.httpService.get(url).toPromise();
 
         const events = data?.body?.events ?? [];
@@ -50,7 +48,7 @@ export class AppService {
     const showings = days.map((d) => d.showings).flat();
 
     if (showings.length) {
-      this.onNotify(showings);
+      await this.onNotify(showings);
     }
   }
 
@@ -61,12 +59,12 @@ export class AppService {
   async onNotify(showings: any[]) {
     const message = `Quick! There are ${showings.length} showings of Spider-Man! http://localhost:3000`;
 
+    Logger.log(message);
+
     await this.client.messages.create({
       body: message,
       from: '+447488880681',
       to: '+447880880680',
     });
-
-    Logger.log(message);
   }
 }
