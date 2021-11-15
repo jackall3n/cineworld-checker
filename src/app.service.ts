@@ -57,7 +57,7 @@ export class AppService {
   }
 
   async onNotify(showings: any[]) {
-    const message = `Quick! There are ${showings.length} showings of Spider-Man! https://cineworld-checker-8d7dm.ondigitalocean.app/`;
+    const message = `Quick! There are ${showings.length} showings of Spider-Man! ${process.env.PUBLIC_URL}`;
 
     Logger.log(message);
 
