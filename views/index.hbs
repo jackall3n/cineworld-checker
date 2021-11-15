@@ -1,0 +1,51 @@
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>App</title>
+  <script src='https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js'></script>
+  <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+<div id='app'>
+
+  <div class='bg-gray-100'>
+    <div class='grid grid-cols-7 gap-4 p-4'>
+      <div v-for='(day, index) of days' :key='index'>
+        <div class='pb-4'>${ format(day.date, 'ddd DD MMM') }</div>
+        <div class='grid grid-flow-row gap-4'>
+          <div v-for='(showing, index) of day.showings' :key='index' class='flex'>
+            <a class="rounded-md bg-blue-400 text-white p-2 flex-1" :href='showing.bookingLink' target="_blank">
+              ${ format(showing.eventDateTime, 'HH:mm') }
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  new Vue({
+    delimiters: ['${', '}'],
+    el: '#app',
+    data() {
+      return {
+        test: 1,
+        days: [],
+      };
+    },
+    async created() {
+      const response = await fetch('/showings');
+
+      this.days = await response.json();
+    },
+    methods: {
+      format(date, format) {
+        return dayjs(date).format(format);
+      },
+    },
+  });
+</script>
+</body>
+</html>
