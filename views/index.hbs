@@ -38,7 +38,7 @@
     async created() {
       const uri = window.location.search.substring(1);
       const days = new URLSearchParams(uri).get("days");
-      const response = await fetch(`/showings?days=${days}`);
+      const response = await fetch(`/showings?days=${days ?? 14}`);
 
       this.days = await response.json();
     },
