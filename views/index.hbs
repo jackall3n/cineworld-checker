@@ -36,7 +36,9 @@
       };
     },
     async created() {
-      const response = await fetch('/showings');
+      const uri = window.location.search.substring(1);
+      const days = new URLSearchParams(uri).get("days");
+      const response = await fetch(`/showings?days=${days}`);
 
       this.days = await response.json();
     },

@@ -12,7 +12,7 @@ export class AppController {
   }
 
   @Get('showings')
-  showings(@Query('days') days?: number) {
+  showings(@Query('days') days: number) {
     return this.appService.getShowings(days ?? 14);
   }
 }
