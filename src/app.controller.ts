@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Render } from '@nestjs/common';
+import { Controller, Get, ParseIntPipe, Query, Render } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -12,7 +12,9 @@ export class AppController {
   }
 
   @Get('showings')
-  showings(@Query('days') days: number) {
+  showings(@Query('days', ParseIntPipe) days: number) {
+    console.log(days);
+
     return this.appService.getShowings(days ?? 14);
   }
 }
