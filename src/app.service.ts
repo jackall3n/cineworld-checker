@@ -1,6 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { addDays, endOfToday, format, subHours } from 'date-fns';
+import {
+  addDays,
+  differenceInDays,
+  endOfDay,
+  endOfToday,
+  format,
+  parseISO,
+  subHours,
+} from 'date-fns';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectTwilio, TwilioClient } from 'nestjs-twilio';
 
@@ -15,12 +23,24 @@ export class AppService {
     @InjectTwilio() private readonly client: TwilioClient,
   ) {}
 
-  async getShowings(days: number) {
+  getDates() {
     const today = subHours(endOfToday(), 12);
+    const to = subHours(endOfDay(parseISO('2021-12-19T12:00:00.000Z')), 12);
+    const days = differenceInDays(to, today);
 
-    const dates = Array.from(Array(days)).map((_, i) => {
+    if (days < 0) {
+      return [];
+    }
+
+    console.log({ today, to, days });
+
+    return Array.from(Array(days + 1)).map((_, i) => {
       return format(addDays(today, i), 'yyyy-MM-dd');
     });
+  }
+
+  async getShowings() {
+    const dates = this.getDates();
 
     const results = await Promise.all(
       dates.map(async (date) => {
@@ -44,7 +64,7 @@ export class AppService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async check() {
-    const days = await this.getShowings(14);
+    const days = await this.getShowings();
     const showings = days.map((d) => d.showings).flat();
 
     if (showings.length) {

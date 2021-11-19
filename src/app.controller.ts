@@ -12,9 +12,7 @@ export class AppController {
   }
 
   @Get('showings')
-  showings(@Query('days', ParseIntPipe) days: number) {
-    console.log(days);
-
-    return this.appService.getShowings(days ?? 14);
+  showings() {
+    return this.appService.getShowings();
   }
 }
