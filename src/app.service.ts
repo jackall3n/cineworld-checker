@@ -1,14 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import {
-  addDays,
-  differenceInDays,
-  endOfDay,
-  endOfToday,
-  format,
-  parseISO,
-  subHours,
-} from 'date-fns';
+import { addDays, differenceInDays, endOfDay, endOfToday, format, parseISO, subHours } from 'date-fns';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectTwilio, TwilioClient } from 'nestjs-twilio';
 
@@ -25,17 +17,12 @@ export class AppService {
 
   getDates() {
     const today = subHours(endOfToday(), 12);
-    const to = subHours(endOfDay(parseISO('2021-12-19T12:00:00.000Z')), 12);
-    const days = differenceInDays(to, today);
+    const from = subHours(endOfDay(parseISO('2022-07-07T12:00:00.000Z')), 12);
 
-    if (days < 0) {
-      return [];
-    }
+    // console.log({ today, to, days });
 
-    console.log({ today, to, days });
-
-    return Array.from(Array(days + 1)).map((_, i) => {
-      return format(addDays(today, i), 'yyyy-MM-dd');
+    return Array.from(Array(12)).map((_, i) => {
+      return format(addDays(from, i), 'yyyy-MM-dd');
     });
   }
 
@@ -47,7 +34,7 @@ export class AppService {
         Logger.log(`Getting times for ${date}`);
 
         // const url = this.createUrl('ho00007226', date);
-        const url = this.createUrl('ho00008069', date);
+        const url = this.createUrl('ho00008428', date);
         const { data } = await this.httpService.get(url).toPromise();
 
         const events = data?.body?.events ?? [];
@@ -62,7 +49,7 @@ export class AppService {
     return results;
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   async check() {
     const days = await this.getShowings();
     const showings = days.map((d) => d.showings).flat();
@@ -77,7 +64,7 @@ export class AppService {
   }
 
   async onNotify(showings: any[]) {
-    const message = `Quick! There are ${showings.length} showings of Spider-Man! ${process.env.PUBLIC_URL}`;
+    const message = `Quick! There are ${showings.length} showings of your fil! ${process.env.PUBLIC_URL}`;
 
     Logger.log(message);
 
